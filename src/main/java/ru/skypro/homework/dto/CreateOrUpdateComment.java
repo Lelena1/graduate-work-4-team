@@ -6,12 +6,8 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 
 @Data
-public class Login {
+public class CreateOrUpdateComment {
     @Min(4)
-    @Max(32)
-    private String username;
-    @Min(8)
-    @Max(16)
-    private String password;
-
+    @Max(84)
+    private String text;
 }
