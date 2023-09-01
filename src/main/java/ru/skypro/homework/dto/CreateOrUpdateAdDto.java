@@ -6,7 +6,7 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 
 @Data
-public class CreateOrUpdateAd {
+public class CreateOrUpdateAdDto {
     @Min(4)
     @Max(32)
     private String title;

@@ -1,8 +1,8 @@
 package ru.skypro.homework.service;
 
-import ru.skypro.homework.dto.Register;
+import ru.skypro.homework.dto.RegisterDto;
 
 public interface RegisterService {
 
-    Register regiserUser(Register register);
+    RegisterDto regiserUser(RegisterDto register);
 }

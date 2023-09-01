@@ -7,7 +7,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.Pattern;
 
 @Data
-public class Register {
+public class RegisterDto {
     @Min(4)
     @Max(32)
     private String username;

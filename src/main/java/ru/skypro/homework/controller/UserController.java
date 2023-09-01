@@ -13,6 +13,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import ru.skypro.homework.dto.NewPasswordDto;
+import ru.skypro.homework.dto.UpdateUserDto;
+import ru.skypro.homework.dto.UserDto;
 import ru.skypro.homework.service.UserService;
 
 /**
@@ -73,7 +76,7 @@ public class UserController {
             )
     })
     @PostMapping("/set_password")
-    public ResponseEntity<Void> setPassword(@RequestBody NewPassword newPasswordDto) {
+    public ResponseEntity<Void> setPassword(@RequestBody NewPasswordDto newPasswordDto) {
         log.info("Новый пароль установлен");
         return ResponseEntity.ok().build();
     }
@@ -123,8 +126,8 @@ public class UserController {
     })
     @GetMapping("/me")
 
-    public ResponseEntity<UserDto> getUser() {
-        UserDto currentUserDto = userService.getUser();
+    public ResponseEntity<UserDto> getUser(UserDto userDto) {
+        UserDto currentUserDto = userService.getUser(userDto);
         if (currentUserDto == null) {
             return ResponseEntity.notFound().build();
         }
@@ -215,4 +218,4 @@ public class UserController {
 
 
 }
-}
+

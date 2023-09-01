@@ -1,17 +1,17 @@
 package ru.skypro.homework.service;
 
 import org.springframework.web.multipart.MultipartFile;
-import ru.skypro.homework.dto.NewPassword;
-import ru.skypro.homework.dto.UpdateUser;
-import ru.skypro.homework.dto.User;
+import ru.skypro.homework.dto.NewPasswordDto;
+import ru.skypro.homework.dto.UpdateUserDto;
+import ru.skypro.homework.dto.UserDto;
 
 public interface UserService {
 
-    NewPassword addNewPassword(String currentPassword, String newPassword);
+    NewPasswordDto addNewPassword(String currentPassword, String newPassword);
 
-    User getUser(User user);
+    UserDto getUser(UserDto user);
 
-    UpdateUser updateUser(UpdateUser updateUser);
+    UpdateUserDto updateUser(UpdateUserDto updateUser);
 
     void updateUserImage(int id, MultipartFile multipartFile);
 

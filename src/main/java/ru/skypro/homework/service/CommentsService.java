@@ -1,19 +1,19 @@
 package ru.skypro.homework.service;
 
-import ru.skypro.homework.dto.Comment;
-import ru.skypro.homework.dto.Comments;
-import ru.skypro.homework.dto.CreateOrUpdateComment;
+import ru.skypro.homework.dto.CommentDto;
+import ru.skypro.homework.dto.CommentsDto;
+import ru.skypro.homework.dto.CreateOrUpdateCommentDto;
 
 import java.util.List;
 
 public interface CommentsService {
-    List<Comments> getComment(int adId);
+    List<CommentsDto> getComment(int adId);
 
-    Comment addComeent(int adId, Comment comment);
+    CommentDto addComeent(int adId, CommentDto comment);
 
     void deleteComment(int adId, int commentId);
 
-    CreateOrUpdateComment createOrUpdateComment(int adId, int commentId);
+    CreateOrUpdateCommentDto createOrUpdateComment(int adId, int commentId);
 
 
 
