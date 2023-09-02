@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import ru.skypro.homework.dto.LoginDto;
 import ru.skypro.homework.dto.RegisterDto;
+import ru.skypro.homework.entity.users.User;
+import ru.skypro.homework.exep.UserAlreadyExist;
 import ru.skypro.homework.service.AuthService;
 
 @Slf4j
@@ -30,11 +32,13 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterDto register) {
-        if (authService.register(register)) {
-            return ResponseEntity.status(HttpStatus.CREATED).build();
-        } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    public ResponseEntity<?> register(@RequestBody RegisterDto register) throws UserAlreadyExist {
+
+        try {
+             authService.register(register);
+            return ResponseEntity.ok("user save");
+            }  catch (UserAlreadyExist e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 }

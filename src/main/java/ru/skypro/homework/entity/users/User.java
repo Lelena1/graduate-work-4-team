@@ -34,14 +34,14 @@ public class User {
     private String image;
 
     @Column(name = "role")
-    @Enumerated(EnumType.STRING)
-    private Role role;
+   // @Enumerated(EnumType.STRING)
+    private Enum <Role> role;
 
     @Column(name = "username")
     private String username;
 
     @Column(name = "password")
-    private Integer password;
+    private String password;
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
     private List<Ad> ads;

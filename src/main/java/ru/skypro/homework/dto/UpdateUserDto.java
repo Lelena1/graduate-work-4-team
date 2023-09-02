@@ -1,6 +1,7 @@
 package ru.skypro.homework.dto;
 
 import lombok.Data;
+import ru.skypro.homework.entity.users.User;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -18,4 +19,12 @@ public class UpdateUserDto {
     @Min(3)
     @Max(10)
     private String lastName;
+
+    public static UpdateUserDto toModel(User user) {
+        UpdateUserDto model = new UpdateUserDto();
+        model.setPhone(user.getPhone());
+        model.setFirstName(user.getFirstName());
+        model.setLastName(user.getLastName());
+        return model;
+    }
 }

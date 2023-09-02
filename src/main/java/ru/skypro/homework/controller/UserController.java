@@ -16,7 +16,14 @@ import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.NewPasswordDto;
 import ru.skypro.homework.dto.UpdateUserDto;
 import ru.skypro.homework.dto.UserDto;
+import ru.skypro.homework.entity.userCover.UserCover;
+import ru.skypro.homework.entity.users.User;
+import ru.skypro.homework.exep.UserNotUpdatedEx;
+import ru.skypro.homework.service.UserCoverService;
 import ru.skypro.homework.service.UserService;
+
+import java.io.EOFException;
+import java.io.IOException;
 
 /**
  * Класс - контроллер для работы с авторизированным пользователем и его данными, содержащий набор API endpoints
@@ -32,6 +39,7 @@ import ru.skypro.homework.service.UserService;
 public class UserController {
 
     private final UserService userService;
+    private final UserCoverService userCoverService;
 
     @Operation(
             summary = "Обновление пароля пользователя",
@@ -76,6 +84,7 @@ public class UserController {
             )
     })
     @PostMapping("/set_password")
+
     public ResponseEntity<Void> setPassword(@RequestBody NewPasswordDto newPasswordDto) {
         log.info("Новый пароль установлен");
         return ResponseEntity.ok().build();
@@ -126,8 +135,8 @@ public class UserController {
     })
     @GetMapping("/me")
 
-    public ResponseEntity<UserDto> getUser(UserDto userDto) {
-        UserDto currentUserDto = userService.getUser(userDto);
+    public ResponseEntity<UserDto> getUser(@RequestParam Integer id) {
+        UserDto currentUserDto = userService.getUser(id);
         if (currentUserDto == null) {
             return ResponseEntity.notFound().build();
         }
@@ -179,10 +188,13 @@ public class UserController {
     })
     @PatchMapping("/me")
 
-    public ResponseEntity<UpdateUserDto> updateUser(@RequestBody UpdateUserDto updateUserDto) {
-        UpdateUserDto newUser = userService.updateUser(updateUserDto);
-        System.out.println("Новый пользователь создан или данные о пользователе обновлены");
-        return ResponseEntity.ok(newUser);
+    public ResponseEntity updateUser(@RequestParam Integer id, @RequestBody UpdateUserDto userDto) throws UserNotUpdatedEx {
+
+        try {
+            return ResponseEntity.ok(userService.updateUser(id, userDto));
+        } catch (UserNotUpdatedEx ex) {
+          return   ResponseEntity.badRequest().body("User not updated");
+        }
     }
 
     @Operation(
@@ -210,10 +222,21 @@ public class UserController {
             )
     })
     @PatchMapping(value = "/me/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<byte[]> updateUserImage(@RequestPart MultipartFile image) {
+    public ResponseEntity<byte[]> updateUserImage(@RequestPart MultipartFile image, @RequestParam Integer userId) throws IOException {
         log.info("Аватар пользователя успешно обновлен");
-        userService.updateUserImage(image);
-        return ResponseEntity.ok().build();
+
+
+        try {
+            userCoverService.uploadImage(userId, image);
+            return ResponseEntity.ok()
+                    .contentType(MediaType.IMAGE_JPEG)
+                    .contentType(MediaType.IMAGE_PNG)
+                    .build();
+
+        } catch (Exception e) {
+            throw new EOFException("Не удалось загрузть файл");
+        }
+
     }
 
 
