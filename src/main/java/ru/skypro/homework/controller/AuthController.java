@@ -32,12 +32,12 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterDto register) throws UserAlreadyExist {
+    public ResponseEntity register(@RequestBody RegisterDto register) throws UserAlreadyExist {
 
         try {
              authService.register(register);
             return ResponseEntity.ok("user save");
-            }  catch (UserAlreadyExist e) {
+            }  catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }

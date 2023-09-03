@@ -7,5 +7,5 @@ import ru.skypro.homework.exep.UserAlreadyExist;
 public interface AuthService {
     boolean login(String userName, String password);
 
-    User register(RegisterDto register) throws UserAlreadyExist;
+   boolean register(RegisterDto register);
 }

@@ -10,9 +10,8 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Pattern;
 
-@Getter
-@Setter
-public class RegisterDto extends User {
+@Data
+public class RegisterDto{
     @Min(4)
     @Max(32)
     private String userName;
@@ -29,16 +28,5 @@ public class RegisterDto extends User {
     private String phone;
     private Role role;
 
-    public static RegisterDto toModel(User user) {
-        RegisterDto model = new RegisterDto();
-        model.setFirstName(user.getFirstName());
-        model.setUserName(user.getUsername());
-        model.setPassword(user.getPassword());
-        model.setLastName(user.getLastName());
-        model.setPhone(user.getPhone());
-        model.setRole(user.getRole());
-        return model;
-
-    }
 
 }
