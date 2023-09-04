@@ -19,6 +19,7 @@ public class UserCover {
     private byte[] preview;
     @OneToOne
     @JoinColumn(name = "user_id")
+   // @JoinColumn(name = "image")
     private User user;
 
     public UserCover() {

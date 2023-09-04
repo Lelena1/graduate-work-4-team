@@ -4,8 +4,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import ru.skypro.homework.dto.LoginDto;
 import ru.skypro.homework.entity.ads.Ad;
 import ru.skypro.homework.entity.comments.Comment;
+import ru.skypro.homework.entity.userCover.UserCover;
 
 import javax.persistence.*;
 import java.util.List;
@@ -36,6 +38,7 @@ public class User {
     @Column(name = "image")
     private String image;
 
+
     @Column(name = "role")
     @Enumerated(EnumType.STRING)
     private Role role;
@@ -52,18 +55,16 @@ public class User {
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
     private List<Comment> comments;
 
-    @OneToOne(mappedBy = "user",cascade = CascadeType.ALL)
-    @JoinTable(name = "register")
-    private Register register;
-    @Builder
+    @OneToOne(mappedBy = "user")
+    private UserCover userCover;
 
-    public User(Integer id, String firstName, String lastName, String phone, String email, String image, Role role, String username, String password) {
+    @Builder
+    public User(Integer id, String firstName, String lastName, String phone, String email, Role role, String username, String password) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.phone = phone;
         this.email = email;
-        this.image = image;
         this.role = role;
         this.username = username;
         this.password = password;

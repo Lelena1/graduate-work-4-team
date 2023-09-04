@@ -7,8 +7,7 @@ import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
 import ru.skypro.homework.convertor.RegisterConvertor;
 import ru.skypro.homework.dto.RegisterDto;
-import ru.skypro.homework.entity.users.Register;
-import ru.skypro.homework.repository.users.RegisterRepository;
+import ru.skypro.homework.repository.users.UsersRepository;
 import ru.skypro.homework.service.AuthService;
 
 @Service
@@ -16,15 +15,15 @@ public class AuthServiceImpl implements AuthService {
 
     private final UserDetailsManager manager;
     private final PasswordEncoder encoder;
-    private final RegisterRepository registerRepository;
 
+    private final UsersRepository usersRepository;
     private final RegisterConvertor registerConvertor;
 
     public AuthServiceImpl(UserDetailsManager manager,
-                           PasswordEncoder passwordEncoder, RegisterRepository registerRepository, RegisterConvertor registerConvertor) {
+                           PasswordEncoder passwordEncoder, UsersRepository usersRepository, RegisterConvertor registerConvertor) {
         this.manager = manager;
-        this.encoder = passwordEncoder;
-        this.registerRepository = registerRepository;
+        this.encoder = passwordEncoder;;
+        this.usersRepository = usersRepository;
         this.registerConvertor = registerConvertor;
     }
 
@@ -50,8 +49,9 @@ public class AuthServiceImpl implements AuthService {
                         .username(register.getUserName())
                         .roles(register.getRole().name())
                         .build());
-        Register user = registerConvertor.convertEntity(register);
-        registerRepository.save(user);
+        ru.skypro.homework.entity.users.User user = registerConvertor.convertEntity(register);
+        usersRepository.save(user);
+
         return true;
     }
 

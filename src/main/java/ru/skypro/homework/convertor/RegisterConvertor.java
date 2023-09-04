@@ -1,23 +1,21 @@
 package ru.skypro.homework.convertor;
 
 import org.modelmapper.ModelMapper;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.stereotype.Component;
 import ru.skypro.homework.dto.RegisterDto;
-import ru.skypro.homework.entity.users.Register;
+import ru.skypro.homework.entity.users.User;
 
 @Component
 public class RegisterConvertor {
-    private final ModelMapper modelMapper;
 
-    public RegisterConvertor() {
-        this.modelMapper = new ModelMapper();
-    }
+    private ModelMapper modelMapper = new ModelMapper();
 
-    public RegisterDto converterDTO(Register register) {
-        return modelMapper.map(register, RegisterDto.class);
-    }
 
-    public Register convertEntity(RegisterDto registerDto) {
-        return modelMapper.map(registerDto, Register.class);
+
+    public User convertEntity(RegisterDto registerDto) {
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
+        User user = modelMapper.map(registerDto, User.class);
+        return user;
     }
 }

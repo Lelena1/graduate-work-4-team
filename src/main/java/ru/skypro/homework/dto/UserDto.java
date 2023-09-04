@@ -12,6 +12,7 @@ public class UserDto {
     private String firstName;
     private String lastName;
     private Role role;
+    private UserCover userCover;
     public static UserDto toModel(User user) {
 
         UserDto model = new UserDto();

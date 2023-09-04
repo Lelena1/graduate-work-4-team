@@ -18,6 +18,7 @@ import ru.skypro.homework.dto.UpdateUserDto;
 import ru.skypro.homework.dto.UserDto;
 import ru.skypro.homework.entity.userCover.UserCover;
 import ru.skypro.homework.entity.users.User;
+import ru.skypro.homework.exep.UserNotFoundEx;
 import ru.skypro.homework.exep.UserNotUpdatedEx;
 import ru.skypro.homework.service.UserCoverService;
 import ru.skypro.homework.service.UserService;
@@ -39,7 +40,7 @@ import java.io.IOException;
 public class UserController {
 
     private final UserService userService;
-    private final UserCoverService userCoverService;
+
 
     @Operation(
             summary = "Обновление пароля пользователя",
@@ -135,13 +136,14 @@ public class UserController {
     })
     @GetMapping("/me")
 
-    public ResponseEntity<UserDto> getUser(@RequestParam Integer id) {
-        UserDto currentUserDto = userService.getUser(id);
-        if (currentUserDto == null) {
-            return ResponseEntity.notFound().build();
+    public ResponseEntity  getUser(@RequestParam Integer id) {
+        try {
+            return ResponseEntity.ok(userService.getUser(id));
+        } catch (UserNotFoundEx e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("User not found");
         }
-        System.out.println("Данные о пользователе получены");
-        return ResponseEntity.ok(currentUserDto);
     }
 
     @Operation(
@@ -221,16 +223,14 @@ public class UserController {
                             )}
             )
     })
-    @PatchMapping(value = "/me/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<byte[]> updateUserImage(@RequestPart MultipartFile image, @RequestParam Integer userId) throws IOException {
+    @PostMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity updateUserImage(@PathVariable Integer id, @RequestBody MultipartFile image ) throws IOException {
         log.info("Аватар пользователя успешно обновлен");
 
 
         try {
-            userCoverService.uploadImage(userId, image);
+            userService.uploadImage(id, image);
             return ResponseEntity.ok()
-                    .contentType(MediaType.IMAGE_JPEG)
-                    .contentType(MediaType.IMAGE_PNG)
                     .build();
 
         } catch (Exception e) {
