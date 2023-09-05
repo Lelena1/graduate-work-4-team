@@ -1,22 +1,29 @@
 package ru.skypro.homework.dto.users;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import ru.skypro.homework.entity.users.Role;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.Email;
 
-/**
- * DTO for {@link ru.skypro.homework.entity.users.User}
- */
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserDto {
+
+    //    id пользователя
     private Integer id;
-    private String firstName;
-    private String lastName;
-    private String phone;
+    //    логин пользователя
     @Email
     private String email;
+    //    имя пользователя
+    private String firstName;
+    //    фамилия пользователя
+    private String lastName;
+    //    телефон пользователя
+    private String phone;
+    //    роль пользователя
+    private String role;
+    //    ссылка на аватар пользователя
     private String image;
-    private Role role;
-
 }

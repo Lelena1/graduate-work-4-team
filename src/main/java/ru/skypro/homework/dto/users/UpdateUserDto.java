@@ -1,17 +1,27 @@
 package ru.skypro.homework.dto.users;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class UpdateUserDto {
-    @Size(min = 3, max = 10)
-    private String firstName;
-    @Size(min = 3, max = 10)
-    private String lastName;
-    @Pattern(regexp = "\\+7\\s?\\(?\\d{3}\\)?\\s?\\d{3}-?\\d{2}-?\\d{2}", message = "Неверный формат введенного номера телефона")
-    private String phone;
 
+    //    имя пользователя
+    @Min(3)
+    @Max(10)
+    private String firstName;
+    //    фамилия пользователя
+    @Min(3)
+    @Max(10)
+    private String lastName;
+    //    телефон пользователя
+    @Pattern(regexp = "\\+7\\s?\\(?\\d{3}\\)?\\s?\\d{3}-?\\d{2}-?\\d{2}", message = "Телефон введен в неверном формате")
+    private String phone;
 }

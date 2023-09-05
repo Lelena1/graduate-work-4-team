@@ -1,4 +1,4 @@
-package ru.skypro.homework.controller;
+package ru.skypro.homework.controller.users;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -13,10 +13,10 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import ru.skypro.homework.dto.NewPasswordDto;
-import ru.skypro.homework.dto.UpdateUserDto;
-import ru.skypro.homework.dto.UserDto;
-import ru.skypro.homework.service.UserService;
+import ru.skypro.homework.dto.users.NewPasswordDto;
+import ru.skypro.homework.dto.users.UpdateUserDto;
+import ru.skypro.homework.dto.users.UserDto;
+import ru.skypro.homework.service.users.UserService;
 
 /**
  * Класс - контроллер для работы с авторизированным пользователем и его данными, содержащий набор API endpoints
