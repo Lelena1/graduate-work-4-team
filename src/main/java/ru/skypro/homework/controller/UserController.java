@@ -18,6 +18,7 @@ import ru.skypro.homework.dto.UpdateUserDto;
 import ru.skypro.homework.dto.UserDto;
 import ru.skypro.homework.entity.userCover.UserCover;
 import ru.skypro.homework.entity.users.User;
+import ru.skypro.homework.exep.PasswordMatches;
 import ru.skypro.homework.exep.UserNotFoundEx;
 import ru.skypro.homework.exep.UserNotUpdatedEx;
 import ru.skypro.homework.service.UserCoverService;
@@ -84,11 +85,16 @@ public class UserController {
                             )}
             )
     })
-    @PostMapping("/set_password")
+    @PostMapping("/{id}/set_password")
 
-    public ResponseEntity<Void> setPassword(@RequestBody NewPasswordDto newPasswordDto) {
-        log.info("Новый пароль установлен");
-        return ResponseEntity.ok().build();
+    public ResponseEntity setPassword(@PathVariable Integer id,@RequestBody NewPasswordDto newPasswordDto
+                                           ) throws UserNotFoundEx, PasswordMatches {
+        User user = userService.addNewPassword(id,newPasswordDto);
+        try {
+            return ResponseEntity.ok(user);
+        } catch (Exception ex) {
+            return ResponseEntity.badRequest().body("gjgjg");
+        }
     }
 
 
@@ -136,7 +142,7 @@ public class UserController {
     })
     @GetMapping("/me")
 
-    public ResponseEntity  getUser(@RequestParam Integer id) {
+    public ResponseEntity<?>  getUser(@RequestParam Integer id) {
         try {
             return ResponseEntity.ok(userService.getUser(id));
         } catch (UserNotFoundEx e) {
@@ -190,7 +196,7 @@ public class UserController {
     })
     @PatchMapping("/me")
 
-    public ResponseEntity updateUser(@RequestParam Integer id, @RequestBody UpdateUserDto userDto) throws UserNotUpdatedEx {
+    public ResponseEntity updateUser(@RequestParam Integer id, @RequestBody UpdateUserDto userDto){
 
         try {
             return ResponseEntity.ok(userService.updateUser(id, userDto));

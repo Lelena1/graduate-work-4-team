@@ -9,6 +9,7 @@ import ru.skypro.homework.dto.UpdateUserDto;
 import ru.skypro.homework.dto.UserDto;
 import ru.skypro.homework.entity.userCover.UserCover;
 import ru.skypro.homework.entity.users.User;
+import ru.skypro.homework.exep.PasswordMatches;
 import ru.skypro.homework.exep.UserNotFoundEx;
 import ru.skypro.homework.exep.UserNotUpdatedEx;
 import ru.skypro.homework.repository.userCover.UserCoverRepository;
@@ -36,8 +37,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
 
-    public NewPasswordDto addNewPassword(String currentPassword, String newPassword) {
-        return null;
+    public User addNewPassword(Integer id,NewPasswordDto newPassword) {
+        User user = usersRepository.findUserById(id);
+        user.setPassword(newPassword.getCurrentPassword());
+        user.setPassword(newPassword.getNewPassword());
+        return usersRepository.save(user);
     }
 
     @Override

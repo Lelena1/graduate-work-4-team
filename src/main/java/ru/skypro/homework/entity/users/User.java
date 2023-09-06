@@ -49,7 +49,7 @@ public class User {
     @Column(name = "password")
     private String password;
 
-    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Ad> ads;
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)

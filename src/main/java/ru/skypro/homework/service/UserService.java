@@ -5,6 +5,7 @@ import ru.skypro.homework.dto.NewPasswordDto;
 import ru.skypro.homework.dto.UpdateUserDto;
 import ru.skypro.homework.dto.UserDto;
 import ru.skypro.homework.entity.users.User;
+import ru.skypro.homework.exep.PasswordMatches;
 import ru.skypro.homework.exep.UserNotFoundEx;
 import ru.skypro.homework.exep.UserNotUpdatedEx;
 
@@ -12,7 +13,7 @@ import java.io.IOException;
 
 public interface UserService {
 
-    NewPasswordDto addNewPassword(String currentPassword, String newPassword);
+    User addNewPassword(Integer id, NewPasswordDto newPassword) throws PasswordMatches, UserNotFoundEx;
 
     UserDto getUser(Integer id) throws UserNotFoundEx;
 

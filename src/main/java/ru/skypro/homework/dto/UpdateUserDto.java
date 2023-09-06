@@ -20,11 +20,4 @@ public class UpdateUserDto {
     @Max(10)
     private String lastName;
 
-    public static UpdateUserDto toModel(User user) {
-        UpdateUserDto model = new UpdateUserDto();
-        model.setPhone(user.getPhone());
-        model.setFirstName(user.getFirstName());
-        model.setLastName(user.getLastName());
-        return model;
-    }
 }

@@ -34,7 +34,7 @@ public class Ad {
     @JoinColumn(name = "author_id", referencedColumnName = "id")
     private User author;
 
-    @OneToMany(mappedBy = "ad", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "ad", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Comment> comments;
 
 }
