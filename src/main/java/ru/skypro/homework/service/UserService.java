@@ -17,7 +17,6 @@ public interface UserService {
     UserDto getUser(Integer id) throws UserNotFoundEx;
 
 
-
     User updateUser(Integer id, UpdateUserDto userDto) throws UserNotUpdatedEx;
 
 

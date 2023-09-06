@@ -11,8 +11,6 @@ public class RegisterConvertor {
 
     private ModelMapper modelMapper = new ModelMapper();
 
-
-
     public User convertEntity(RegisterDto registerDto) {
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
         User user = modelMapper.map(registerDto, User.class);
