@@ -9,10 +9,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import ru.skypro.homework.convertor.UserConvertor;
 import ru.skypro.homework.dto.NewPasswordDto;
 import ru.skypro.homework.dto.UpdateUserDto;
 import ru.skypro.homework.dto.UserDto;
@@ -41,6 +43,8 @@ import java.io.IOException;
 public class UserController {
 
     private final UserService userService;
+
+
 
 
     @Operation(
@@ -89,11 +93,12 @@ public class UserController {
 
     public ResponseEntity setPassword(@PathVariable Integer id,@RequestBody NewPasswordDto newPasswordDto
                                            ) throws UserNotFoundEx, PasswordMatches {
+
         User user = userService.addNewPassword(id,newPasswordDto);
         try {
             return ResponseEntity.ok(user);
         } catch (Exception ex) {
-            return ResponseEntity.badRequest().body("gjgjg");
+            return ResponseEntity.badRequest().body("false");
         }
     }
 

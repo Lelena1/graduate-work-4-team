@@ -4,14 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import ru.skypro.homework.convertor.UserConvertor;
 import ru.skypro.homework.dto.NewPasswordDto;
 import ru.skypro.homework.dto.UpdateUserDto;
 import ru.skypro.homework.dto.UserDto;
 import ru.skypro.homework.entity.userCover.UserCover;
 import ru.skypro.homework.entity.users.User;
-import ru.skypro.homework.exep.PasswordMatches;
 import ru.skypro.homework.exep.UserNotFoundEx;
-import ru.skypro.homework.exep.UserNotUpdatedEx;
 import ru.skypro.homework.repository.userCover.UserCoverRepository;
 import ru.skypro.homework.repository.users.UsersRepository;
 import ru.skypro.homework.service.UserService;
@@ -23,7 +22,6 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Objects;
 
 import static java.nio.file.StandardOpenOption.CREATE_NEW;
 
@@ -33,14 +31,22 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UsersRepository usersRepository;
     @Autowired
+    private final UserConvertor userConvertor;
+
+    @Autowired
     private UserCoverRepository userCoverRepository;
+
+    public UserServiceImpl(UserConvertor userConvertor) {
+        this.userConvertor = userConvertor;
+    }
+
 
     @Override
 
     public User addNewPassword(Integer id,NewPasswordDto newPassword) {
         User user = usersRepository.findUserById(id);
-        user.setPassword(newPassword.getCurrentPassword());
         user.setPassword(newPassword.getNewPassword());
+        userConvertor.convertPassword(newPassword);
         return usersRepository.save(user);
     }
 
@@ -57,7 +63,7 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public User updateUser(Integer id, UpdateUserDto userDto) throws UserNotUpdatedEx {
+    public User updateUser(Integer id, UpdateUserDto userDto){
         User user = usersRepository.findUserById(id);
         user.setFirstName(userDto.getFirstName());
         user.setLastName(userDto.getLastName());
@@ -69,7 +75,7 @@ public class UserServiceImpl implements UserService {
     private String fileDir;
 
     @Override
-    public void uploadImage(Integer userId, MultipartFile multipartFile) throws IOException, UserNotFoundEx {
+    public void uploadImage(Integer userId, MultipartFile multipartFile) throws IOException {
         User user = usersRepository.findUserById(userId);
         Path filePath = Path.of(fileDir, user + ".");// + getExtension(Objects.requireNonNull(multipartFile.getOriginalFilename())));
         Files.createDirectories(filePath.getParent());

@@ -4,13 +4,10 @@ import lombok.Data;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.Size;
 
 @Data
 public class NewPasswordDto {
-    @Min(8)
-    @Max(16)
-    private String currentPassword;
-    @Min(8)
-    @Max(16)
+    @Size(min = 8,max = 16)
     private String newPassword;
 }
