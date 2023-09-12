@@ -1,6 +1,7 @@
 package ru.skypro.homework.mappers;
 
 import org.mapstruct.*;
+import org.mapstruct.factory.Mappers;
 import ru.skypro.homework.dto.auth.LoginDto;
 import ru.skypro.homework.dto.auth.NewPasswordDto;
 import ru.skypro.homework.dto.auth.RegisterDto;
@@ -10,6 +11,7 @@ import ru.skypro.homework.entity.users.User;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
+
 
     User toEntity(UserDto userDto);
 
