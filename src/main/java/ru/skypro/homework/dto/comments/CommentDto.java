@@ -3,7 +3,7 @@ package ru.skypro.homework.dto.comments;
 import lombok.Data;
 
 /**
- * DTO for {@link ru.skypro.homework.entity.comments.Comment}
+ * DTO for {@link ru.skypro.homework.dto.comments.CommentDto}
  */
 @Data
 public class CommentDto {

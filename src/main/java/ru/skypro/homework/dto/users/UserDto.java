@@ -5,7 +5,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.Email;
-
+/**
+ * DTO for {@link ru.skypro.homework.dto.comments.CreateOrUpdateCommentDto}
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

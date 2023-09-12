@@ -4,7 +4,9 @@ import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
-
+/**
+ * DTO for {@link ru.skypro.homework.dto.comments.CreateOrUpdateCommentDto}
+ */
 @Data
 public class CreateOrUpdateCommentDto {
     @NotEmpty(message = "Поле не может быть пустым")

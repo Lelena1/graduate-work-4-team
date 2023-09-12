@@ -9,6 +9,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,6 +34,8 @@ import ru.skypro.homework.service.users.UserService;
 public class UserController {
 
     private final UserService userService;
+
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @Operation(
             summary = "Обновление пароля пользователя",
@@ -125,7 +129,6 @@ public class UserController {
             )
     })
     @GetMapping("/me")
-
     public ResponseEntity<UserDto> getUser() {
         UserDto currentUserDto = userService.getUser();
         if (currentUserDto == null) {
@@ -178,7 +181,6 @@ public class UserController {
             )
     })
     @PatchMapping("/me")
-
     public ResponseEntity<UpdateUserDto> updateUser(@RequestBody UpdateUserDto updateUserDto) {
         UpdateUserDto newUser = userService.updateUser(updateUserDto);
         System.out.println("Новый пользователь создан или данные о пользователе обновлены");
@@ -215,8 +217,4 @@ public class UserController {
         userService.updateUserImage(image);
         return ResponseEntity.ok().build();
     }
-
-
-
-
 }

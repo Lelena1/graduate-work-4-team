@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.ads.AdDto;
@@ -18,6 +19,7 @@ import ru.skypro.homework.service.ads.AdsService;
 @CrossOrigin(value = "http://localhost:3000")
 @RestController
 @Slf4j
+@Validated
 @RequestMapping("/ads")
 public class AdsController {
 
