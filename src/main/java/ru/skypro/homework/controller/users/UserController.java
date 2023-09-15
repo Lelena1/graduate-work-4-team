@@ -1,4 +1,4 @@
-package ru.skypro.homework.controller;
+package ru.skypro.homework.controller.users;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -215,8 +215,5 @@ public class UserController {
         userService.updateUserImage(image);
         return ResponseEntity.ok().build();
     }
-
-
-
-
 }
+
