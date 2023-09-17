@@ -1,9 +1,12 @@
 package ru.skypro.homework.mappers;
 
-import org.mapstruct.*;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.Mappings;
+import ru.skypro.homework.dto.ads.in.CreateOrUpdateAdDto;
 import ru.skypro.homework.dto.ads.out.AdDto;
 import ru.skypro.homework.dto.ads.out.AdsDto;
-import ru.skypro.homework.dto.ads.in.CreateOrUpdateAdDto;
 import ru.skypro.homework.dto.ads.out.ExtendedAdDto;
 import ru.skypro.homework.entity.ads.Ad;
 import ru.skypro.homework.entity.users.User;
@@ -42,5 +45,4 @@ public interface AdMapper {
     }
 
     void updateAds(CreateOrUpdateAdDto createOrUpdateAdDto, @MappingTarget Ad ad);
-
 }
