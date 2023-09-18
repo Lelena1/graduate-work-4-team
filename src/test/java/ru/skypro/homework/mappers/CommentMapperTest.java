@@ -4,6 +4,7 @@ package ru.skypro.homework.mappers;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 import ru.skypro.homework.dto.comments.out.CommentDto;
+import ru.skypro.homework.dto.comments.out.CommentsDto;
 import ru.skypro.homework.entity.ads.Ad;
 import ru.skypro.homework.entity.comments.Comment;
 import ru.skypro.homework.entity.users.User;
@@ -60,7 +61,8 @@ class CommentMapperTest {
         comment1.setAuthor(author1);
         comment1.setPk(100);
         comment1.setText("text of comment1");
-        comment1.setCreatedAt(LocalDateTime.now());
+
+        comment1.setCreatedAt(LocalDateTime.of(1, 1, 1, 1, 1, 1));
 
         Ad ad1 = new Ad();
         ad1.setAuthor(author1);
@@ -71,10 +73,10 @@ class CommentMapperTest {
         author1.setFirstName("Alexey");
 
         Comment comment2 = new Comment();
-        comment1.setAuthor(author2);
-        comment1.setPk(10050);
-        comment1.setText("text of comment2");
-        comment1.setCreatedAt(LocalDateTime.now());
+        comment2.setAuthor(author2);
+        comment2.setPk(10050);
+        comment2.setText("text of comment2");
+        comment2.setCreatedAt(LocalDateTime.of(2, 2, 2, 2, 2, 2));
 
         Ad ad2 = new Ad();
         ad2.setAuthor(author2);
@@ -82,12 +84,12 @@ class CommentMapperTest {
         List<Comment> commentList = List.of(comment1, comment2);
 
         //when
-//        CommentsDto commentsDto = commentMapper.toCommentsDto(commentList);
-//        System.out.println(commentsDto);
+        CommentsDto commentsDto = commentMapper.toCommentsDto(commentList);
+        System.out.println(commentsDto);
 
         //then
-//        assertThat(commentsDto).isNotNull();
-//        assertThat(commentsDto.getCount()).isEqualTo(commentList.size());
-//        assertThat(commentsDto.getResults()).isNotNull();
+        assertThat(commentsDto).isNotNull();
+        assertThat(commentsDto.getCount()).isEqualTo(commentList.size());
+        assertThat(commentsDto.getResults()).isNotNull();
     }
 }
