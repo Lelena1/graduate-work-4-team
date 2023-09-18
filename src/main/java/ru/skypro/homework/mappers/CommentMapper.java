@@ -1,6 +1,8 @@
 package ru.skypro.homework.mappers;
 
-import org.mapstruct.*;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
 import ru.skypro.homework.dto.comments.out.CommentDto;
 import ru.skypro.homework.dto.comments.out.CommentsDto;
 import ru.skypro.homework.entity.comments.Comment;
