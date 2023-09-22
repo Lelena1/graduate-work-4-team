@@ -60,10 +60,10 @@ public class AdsServiceImpl implements AdsService {
     public AdDto addAd(CreateOrUpdateAdDto createOrUpdateAdDto, MultipartFile image) {
         User author = userService.getAuthor();
         try {
-            String imagePath = imageService.consumeImageOfGoods(image);
+            String urlToImage = imageService.consumeImageOfGoods(image);
             Ad ad = adMapper.toAd(createOrUpdateAdDto);
             ad.setAuthor(author);
-            ad.setImage(imagePath);
+            ad.setImage(urlToImage);
             adsRepository.save(ad);
             return adMapper.toAdDto(ad);
         } catch (IOException e) {
@@ -80,11 +80,11 @@ public class AdsServiceImpl implements AdsService {
     }
 
     @Override
-    @PreAuthorize("hasAuthority('ADMIN') or (hasAuthority('USER') and @authServiceImpl.isUserAllowedToChangeAds(authentication, #id))")
+    @PreAuthorize("hasAnyAuthority('ADMIN','USER')")
     public ExtendedAdDto getAds(Integer id) {
         Optional<Ad> adOptional = adsRepository.findByPkIs(id);
         if (adOptional.isEmpty()) {
-            throw new NotFoundException("Объявление с таким id не найдено: " + id);
+            throw new NotFoundException("Ad with such id not found: " + id);
         } else {
             Ad ad = adOptional.get();
             return adMapper.toExtendedAdDto(ad);
@@ -95,10 +95,9 @@ public class AdsServiceImpl implements AdsService {
     @Transactional
     @PreAuthorize("hasAuthority('ADMIN') or (hasAuthority('USER') and @authServiceImpl.isUserAllowedToChangeAds(authentication, #id))")
     public AdDto updateAds(Integer id, CreateOrUpdateAdDto createOrUpdateAdDto) {
-        User author = userService.getAuthor();
-        Optional<Ad> adOptional = adsRepository.findByAuthorAndPk(author, id);
+        Optional<Ad> adOptional = adsRepository.findByPkIs(id);
         if (adOptional.isEmpty()) {
-            throw new NotFoundException("Объявление с таким id не найдено: " + id);
+            throw new NotFoundException("Ad with such id not found: " + id);
         } else {
             Ad adTarget = adOptional.get();
             adMapper.updateAds(createOrUpdateAdDto, adTarget);
@@ -111,10 +110,9 @@ public class AdsServiceImpl implements AdsService {
     @Transactional
     @PreAuthorize("hasAuthority('ADMIN') or (hasAuthority('USER') and @authServiceImpl.isUserAllowedToChangeAds(authentication, #id))")
     public void removeAd(Integer id) {
-        User author = userService.getAuthor();
-        Optional<Ad> adOptional = adsRepository.findByAuthorAndPk(author, id);
+        Optional<Ad> adOptional = adsRepository.findByPkIs(id);
         if (adOptional.isEmpty()) {
-            throw new NotFoundException("Объявление с таким id не найдено: " + id);
+            throw new NotFoundException("Ad with such id not found: " + id);
         } else {
             Ad ad = adOptional.get();
             adsRepository.delete(ad);
@@ -127,44 +125,43 @@ public class AdsServiceImpl implements AdsService {
     public byte[] updateImage(Integer id, MultipartFile image) throws IOException {
         Optional<Ad> adOptional = adsRepository.findByPkIs(id);
         if (adOptional.isEmpty()) {
-            throw new NotFoundException("Объявление с таким id не найдено: " + id);
+            throw new NotFoundException("Ad with such id not found: " + id);
         } else {
             Ad ad = adOptional.get();
             String currentUrlToImage = ad.getImage();
 
             if (currentUrlToImage != null) {
-                imageService.deleteImageOfGoods(currentUrlToImage);
+                String[] split = currentUrlToImage.split("/");
+                String fullFileName = split[split.length - 1];
+                imageService.deleteImageOfGoods(fullFileName);
             }
+
             String newUrlToImage = imageService.consumeImageOfGoods(image);
 
             ad.setImage(newUrlToImage);
             adsRepository.save(ad);
 
-            Path fullPathToImage = imageService.getFullPathToImageOfGoods(newUrlToImage);
-            return imageService.imageToByteArray(fullPathToImage);
+            String[] split = newUrlToImage.split("/");
+            String fullFileName = split[split.length - 1];
+
+            Path path = imageService.getFullPathToImageOfGoods(fullFileName);
+            return imageService.imageToByteArray(path);
         }
+
     }
 
     @Override
-    @PreAuthorize("isAuthenticated()")
-    public byte[] getImage(Integer id) throws IOException {
-        Optional<Ad> adOptional = adsRepository.findByPkIs(id);
-        if (adOptional.isEmpty()) {
-            throw new NotFoundException("Объявление с таким id не найдено: " + id);
-        } else {
-            String urlToImage = adOptional.get().getImage();
-
-            if (urlToImage == null || urlToImage.isEmpty()) {
-                throw new NotFoundException("У данного объявления нет картинки");
-            }
-            try {
-                Path fullPathToImageOfGoods = imageService.getFullPathToImageOfGoods(urlToImage);
-                return imageService.imageToByteArray(fullPathToImageOfGoods);
-            } catch (NoSuchFileException exception) {
-                throw new NotFoundException("Файл с картинкой не найден по данному адресу" + urlToImage);
-            } catch (IOException exception) {
-                throw new IOException("Ошибка при чтении файла ", exception);
-            }
+    public byte[] getImage(String imageId) throws IOException {
+        if (imageId == null || imageId.isEmpty()) {
+            throw new NotFoundException("Ad do not have photo");
+        }
+        try {
+            Path fullPathToImageOfGoods = imageService.getFullPathToImageOfGoods(imageId);
+            return imageService.imageToByteArray(fullPathToImageOfGoods);
+        } catch (NoSuchFileException exception) {
+            throw new NotFoundException("File with photo was not found at this root" + imageId);
+        } catch (IOException exception) {
+            throw new IOException("Error during reading occurred ", exception);
         }
     }
 

@@ -16,8 +16,9 @@ public interface UserService {
     UpdateUserDto updateUser(UpdateUserDto updateUserDto);
 
     void updateUserImage(MultipartFile image) throws IOException;
+//    byte[] updateUserImage(MultipartFile image) throws IOException;
 
-    byte[] getUserImage() throws IOException;
+    byte[] getImage(String urlToImage) throws IOException, InterruptedException;
 
     User getAuthor();
 }

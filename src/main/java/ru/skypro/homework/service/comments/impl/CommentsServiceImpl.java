@@ -52,7 +52,7 @@ public class CommentsServiceImpl implements CommentsService {
 
     @Override
     @Transactional
-    @PreAuthorize("hasAuthority('ADMIN') or (hasAuthority('USER') and @authServiceImpl.isUserAllowedToChangeAds(authentication, #id))")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     public CommentDto addComment(Integer id, CreateOrUpdateCommentDto createOrUpdateCommentDto) {
         Optional<Ad> adOptional = adsRepository.findById(id);
         if (adOptional.isEmpty()) {

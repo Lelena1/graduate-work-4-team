@@ -10,13 +10,13 @@ public interface ImageService {
 
     String consumeImageOfAvatar(MultipartFile image) throws IOException;
 
-    void deleteImageOfGoods(String urlToImage) throws IOException;
+    void deleteImageOfGoods(String fullFileName) throws IOException;
 
-    void deleteImageOfAvatars(String urlToImage) throws IOException;
+    void deleteImageOfAvatars(String fullFileName) throws IOException;
 
-    Path getFullPathToImageOfGoods(String urlToImage);
+    Path getFullPathToImageOfGoods(String fullFileName);
 
-    Path getFullPathToImageOfAvatars(String urlToImage);
+    Path getFullPathToImageOfAvatars(String fullFileName);
 
-    byte[] imageToByteArray(Path pathToImage) throws IOException;
+    byte[] imageToByteArray(Path path) throws IOException;
 }

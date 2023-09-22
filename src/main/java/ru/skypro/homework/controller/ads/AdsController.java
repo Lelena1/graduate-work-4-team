@@ -19,7 +19,6 @@ import ru.skypro.homework.dto.ads.out.AdDto;
 import ru.skypro.homework.dto.ads.out.AdsDto;
 import ru.skypro.homework.dto.ads.in.CreateOrUpdateAdDto;
 import ru.skypro.homework.dto.ads.out.ExtendedAdDto;
-import ru.skypro.homework.exceptions.NotFoundException;
 import ru.skypro.homework.service.ads.AdsService;
 import ru.skypro.homework.service.image.ImageService;
 
@@ -33,7 +32,6 @@ import java.nio.file.Path;
 @CrossOrigin(value = "http://localhost:3000")
 @Slf4j
 @Validated
-@RequestMapping("/ads")
 public class AdsController {
 
     private final AdsService adsService;
@@ -45,7 +43,7 @@ public class AdsController {
     }
 
 
-    @GetMapping
+    @GetMapping("/ads")
     @Operation(summary = "Getting all ads of all users")
     @ApiResponse(responseCode = "200", description = "OK")
     public ResponseEntity<AdsDto> getAllAds() {
@@ -54,7 +52,7 @@ public class AdsController {
         return ResponseEntity.ok(adsDto);
     }
 
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/ads", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "Adding new ad")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Created", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = AdDto.class))}),
@@ -63,18 +61,14 @@ public class AdsController {
     public ResponseEntity<AdDto> addAd(
             @Parameter(description = "DTO to update Ad", required = true, schema = @Schema(implementation = CreateOrUpdateAdDto.class))
             @RequestPart("properties") @Valid CreateOrUpdateAdDto createOrUpdateAdDto,
-            @Parameter(description = "Image file", required = true, content = {
-                    @Content(mediaType = "image/jpg"),
-                    @Content(mediaType = "image/jpeg"),
-                    @Content(mediaType = "image/png")
-            })
+            @Parameter(description = "Image file", required = true, content = {@Content(mediaType = "multipart/form-data", schema = @Schema(type = "string", format = "binary"))})
             @RequestPart("image") MultipartFile image) {
         AdDto adDto = adsService.addAd(createOrUpdateAdDto, image);
         log.info("Added new ad with body {} and photo {}", createOrUpdateAdDto, image);
         return new ResponseEntity<>(adDto, HttpStatus.CREATED);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/ads/{id}")
     @Operation(summary = "Get ad by id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ExtendedAdDto.class))}),
@@ -92,7 +86,7 @@ public class AdsController {
         return new ResponseEntity<>(extendedAdDto, HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/ads/{id}")
     @Operation(summary = "Delete an ad with given Id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "No Content", content = @Content),
@@ -108,7 +102,7 @@ public class AdsController {
         return ResponseEntity.ok().build();
     }
 
-    @PatchMapping("/{id}")
+    @PatchMapping("/ads/{id}")
     @Operation(summary = "Update ad previously created")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = AdDto.class))}),
@@ -126,7 +120,7 @@ public class AdsController {
         return ResponseEntity.ok(updatedAd);
     }
 
-    @GetMapping("/me")
+    @GetMapping("/ads/me")
     @Operation(summary = "Get all ads of the User")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = AdsDto.class))}),
@@ -138,7 +132,7 @@ public class AdsController {
         return ResponseEntity.ok(adsMe);
     }
 
-    @PatchMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    @PatchMapping(value = "/ads/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     @Operation(summary = "Update image of the goods")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "application/octet-stream")),
@@ -166,7 +160,7 @@ public class AdsController {
         return new ResponseEntity<>(imageBytes, httpHeaders, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/{id}/image", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    @GetMapping(value = "/images/goods/{id}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     @Operation(summary = "Get image of the good by ad id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "application/octet-stream")),
@@ -175,25 +169,21 @@ public class AdsController {
             @ApiResponse(responseCode = "404", description = "Not found", content = @Content)
     })
     public ResponseEntity<byte[]> getImage(
-            @Parameter(name = "id", description = "Id of the ad", required = true)
-            @PathVariable("id") Integer id) throws IOException {
+            @Parameter(name = "Image name", description = "Image name with extension", required = true)
+            @PathVariable("id") String id
+    ) throws IOException {
         byte[] imageBytes = adsService.getImage(id);
-        if (imageBytes == null) {
-            throw new NotFoundException("У объявления с таким id " + id + "изображение не найдено");
-        } else {
-            ExtendedAdDto extendedAdDto = adsService.getAds(id);
-            String urlToImage = extendedAdDto.getImage();
-            Path fullPathToImageOfGoods = imageService.getFullPathToImageOfGoods(urlToImage);
 
-            long fileSize = Files.size(fullPathToImageOfGoods);
-            String mediaType = Files.probeContentType(fullPathToImageOfGoods);
+        Path fullPathToImageOfGoods = imageService.getFullPathToImageOfGoods(id);
 
-            HttpHeaders httpHeaders = new HttpHeaders();
-            httpHeaders.setContentType(MediaType.parseMediaType(mediaType));
-            httpHeaders.setContentLength(fileSize);
-            log.info("Update image {} ", id);
-            return new ResponseEntity<>(imageBytes, httpHeaders, HttpStatus.OK);
-        }
+        long fileSize = Files.size(fullPathToImageOfGoods);
+        String mediaType = Files.probeContentType(fullPathToImageOfGoods);
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.parseMediaType(mediaType));
+        httpHeaders.setContentLength(fileSize);
+        log.info("Got image {} ", id);
+        return new ResponseEntity<>(imageBytes, httpHeaders, HttpStatus.OK);
     }
 
 }
