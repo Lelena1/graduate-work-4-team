@@ -1,4 +1,4 @@
-GET http://localhost:8080/ads/1/comments
+GET http://localhost:8080/adDto/1/comments
 Content-Type: application/json
 Authorization: Basic user@gmail.com password
 
@@ -56,8 +56,8 @@ Content-Type: application/json
 Authorization: Basic user@gmail.com password
 
 {
-  "newPassword": "password",
-  "currentPassword": "password1"
+  "currentPassword": "password",
+  "newPassword": "password1"
 }
 
 ###
@@ -71,3 +71,15 @@ Authorization: Basic user@gmail.com password
   "title": "123"
 }
 
+###
+POST http://localhost:8080/register
+Content-Type: application/json
+
+{
+  "username": "andreevsv@gmail.com",
+  "firstName": "Sergey",
+  "lastName": "Andreev",
+  "phone": "+7 (964) 783-43-39",
+  "password": "123123123",
+  "role": "USER"
+}
