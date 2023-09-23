@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.skypro.homework.dto.comments.out.CommentDto;
@@ -40,6 +41,7 @@ public class CommentsController {
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
             @ApiResponse(responseCode = "404", description = "Not found", content = @Content)
     })
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<CommentsDto> getComments(
             @Parameter(description = "Id of the ad to get comments", required = true)
             @PathVariable Integer id
@@ -56,6 +58,7 @@ public class CommentsController {
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
             @ApiResponse(responseCode = "404", description = "Not found", content = @Content)
     })
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     public ResponseEntity<CommentDto> addComment(
             @Parameter(description = "Id of the ad", required = true)
             @PathVariable Integer id,
@@ -66,25 +69,6 @@ public class CommentsController {
         return ResponseEntity.status(HttpStatus.CREATED).body(addComment);
     }
 
-    @DeleteMapping("/{adId}/comments/{commentId}")
-    @Operation(summary = "Delete comment")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content),
-            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content),
-            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
-            @ApiResponse(responseCode = "404", description = "Not Found", content = @Content)
-    })
-    public ResponseEntity<Void> deleteComment(
-            @Parameter(description = "Id of the ad", required = true)
-            @PathVariable Integer adId,
-            @Parameter(description = "Id of the comment", required = true)
-            @PathVariable Integer commentId
-    ) {
-        commentsService.deleteComment(adId, commentId);
-        log.info("Comment for ad with id {} and comment id {} deleted", adId, commentId);
-        return ResponseEntity.ok().build();
-    }
-
     @PatchMapping("/{adId}/comments/{commentId}")
     @Operation(summary = "Update comment")
     @ApiResponses(value = {
@@ -93,6 +77,7 @@ public class CommentsController {
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
             @ApiResponse(responseCode = "404", description = "Not Found", content = @Content)
     })
+    @PreAuthorize("hasAuthority('ADMIN') or (hasAuthority('USER') and @authServiceImpl.isUserAllowedToChangeComments(authentication, #adId, #commentId))")
     public ResponseEntity<CommentDto> updateComment(
             @Parameter(description = "Id of the ad", required = true)
             @PathVariable Integer adId,
@@ -105,4 +90,25 @@ public class CommentsController {
         log.info("Comment with ad id {} and comment id {} and createOrUpdateDto {} updated", adId, commentId, createOrUpdateCommentDto);
         return ResponseEntity.ok(updatedComment);
     }
+
+    @DeleteMapping("/{adId}/comments/{commentId}")
+    @Operation(summary = "Delete comment")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Not Found", content = @Content)
+    })
+    @PreAuthorize("hasAuthority('ADMIN') or (hasAuthority('USER') and @authServiceImpl.isUserAllowedToChangeComments(authentication, #adId, #commentId))")
+    public ResponseEntity<Void> deleteComment(
+            @Parameter(description = "Id of the ad", required = true)
+            @PathVariable Integer adId,
+            @Parameter(description = "Id of the comment", required = true)
+            @PathVariable Integer commentId
+    ) {
+        commentsService.deleteComment(adId, commentId);
+        log.info("Comment for ad with id {} and comment id {} deleted", adId, commentId);
+        return ResponseEntity.ok().build();
+    }
+
 }

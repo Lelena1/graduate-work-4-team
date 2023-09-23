@@ -1,6 +1,5 @@
 package ru.skypro.homework.service.comments.impl;
 
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.skypro.homework.dto.comments.out.CommentDto;
@@ -39,7 +38,6 @@ public class CommentsServiceImpl implements CommentsService {
     }
 
     @Override
-    @PreAuthorize("isAuthenticated()")
     public CommentsDto getComments(Integer adId) {
         Optional<Ad> adOptional = adsRepository.findByPkIs(adId);
         if (adOptional.isEmpty()) {
@@ -52,7 +50,6 @@ public class CommentsServiceImpl implements CommentsService {
 
     @Override
     @Transactional
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     public CommentDto addComment(Integer id, CreateOrUpdateCommentDto createOrUpdateCommentDto) {
         Optional<Ad> adOptional = adsRepository.findById(id);
         if (adOptional.isEmpty()) {
@@ -72,7 +69,6 @@ public class CommentsServiceImpl implements CommentsService {
 
     @Override
     @Transactional
-    @PreAuthorize("hasAuthority('ADMIN') or (hasAuthority('USER') and @authServiceImpl.isUserAllowedToChangeComments(authentication, #adId, #commentId))")
     public CommentDto updateComment(Integer adId, Integer commentId, CreateOrUpdateCommentDto createOrUpdateCommentDto) {
         Optional<Comment> commentOptional = commentsRepository.findByAd_PkAndPk(adId, commentId);
         if (commentOptional.isEmpty()) {
@@ -88,7 +84,6 @@ public class CommentsServiceImpl implements CommentsService {
 
     @Override
     @Transactional
-    @PreAuthorize("hasAuthority('ADMIN') or (hasAuthority('USER') and @authServiceImpl.isUserAllowedToChangeComments(authentication, #adId, #commentId))")
     public void deleteComment(Integer adId, Integer commentId) {
         Optional<Comment> commentOptional = commentsRepository.findByAd_PkAndPk(adId, commentId);
         if (commentOptional.isEmpty()) {

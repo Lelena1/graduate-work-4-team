@@ -96,30 +96,6 @@ public class UserServiceImpl implements UserService {
         usersRepository.save(author);
     }
 
-//    @Override
-//    @Transactional
-//    public byte[] updateUserImage(MultipartFile image) throws IOException {
-//        User author = getAuthor();
-//        String currentUrlToImage = author.getImage();
-//        if (currentUrlToImage != null) {
-//            author.setImage(null);
-//            usersRepository.save(author);
-//
-//            String[] split = currentUrlToImage.split("/");
-//            String fullFileName = split[split.length - 1];
-//            imageService.deleteImageOfAvatars(fullFileName);
-//        }
-//        String newUrlToImage = imageService.consumeImageOfAvatar(image);
-//        author.setImage(newUrlToImage);
-//        usersRepository.save(author);
-//
-//        String[] split = newUrlToImage.split("/");
-//        String fullFileName = split[split.length - 1];
-//
-//        Path path = imageService.getFullPathToImageOfAvatars(fullFileName);
-//        return imageService.imageToByteArray(path);
-//    }
-
     @Override
     public byte[] getImage(String id) throws IOException {
         if (id == null || id.isEmpty()) {

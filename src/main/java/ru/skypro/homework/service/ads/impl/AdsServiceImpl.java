@@ -1,6 +1,5 @@
 package ru.skypro.homework.service.ads.impl;
 
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -56,7 +55,6 @@ public class AdsServiceImpl implements AdsService {
 
     @Override
     @Transactional
-    @PreAuthorize("isAuthenticated()")
     public AdDto addAd(CreateOrUpdateAdDto createOrUpdateAdDto, MultipartFile image) {
         User author = userService.getAuthor();
         try {
@@ -72,7 +70,6 @@ public class AdsServiceImpl implements AdsService {
     }
 
     @Override
-    @PreAuthorize("isAuthenticated()")
     public AdsDto getAdsMe() {
         User author = userService.getAuthor();
         List<Ad> adsList = adsRepository.findAllByAuthor(author);
@@ -80,7 +77,6 @@ public class AdsServiceImpl implements AdsService {
     }
 
     @Override
-    @PreAuthorize("hasAnyAuthority('ADMIN','USER')")
     public ExtendedAdDto getAds(Integer id) {
         Optional<Ad> adOptional = adsRepository.findByPkIs(id);
         if (adOptional.isEmpty()) {
@@ -93,7 +89,6 @@ public class AdsServiceImpl implements AdsService {
 
     @Override
     @Transactional
-    @PreAuthorize("hasAuthority('ADMIN') or (hasAuthority('USER') and @authServiceImpl.isUserAllowedToChangeAds(authentication, #id))")
     public AdDto updateAds(Integer id, CreateOrUpdateAdDto createOrUpdateAdDto) {
         Optional<Ad> adOptional = adsRepository.findByPkIs(id);
         if (adOptional.isEmpty()) {
@@ -108,7 +103,6 @@ public class AdsServiceImpl implements AdsService {
 
     @Override
     @Transactional
-    @PreAuthorize("hasAuthority('ADMIN') or (hasAuthority('USER') and @authServiceImpl.isUserAllowedToChangeAds(authentication, #id))")
     public void removeAd(Integer id) {
         Optional<Ad> adOptional = adsRepository.findByPkIs(id);
         if (adOptional.isEmpty()) {
@@ -121,7 +115,6 @@ public class AdsServiceImpl implements AdsService {
 
     @Override
     @Transactional
-    @PreAuthorize("hasAuthority('ADMIN') or (hasAuthority('USER') and @authServiceImpl.isUserAllowedToChangeAds(authentication, #id))")
     public byte[] updateImage(Integer id, MultipartFile image) throws IOException {
         Optional<Ad> adOptional = adsRepository.findByPkIs(id);
         if (adOptional.isEmpty()) {

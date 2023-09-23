@@ -105,29 +105,6 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-//    @PatchMapping(value = "/users/me/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-//    @Operation(summary = "Change user's avatar")
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "200",description = "OK", content = @Content),
-//            @ApiResponse(responseCode = "401",description = "Unauthorized", content = @Content)
-//    })
-//    public ResponseEntity<byte[]> updateUserImage(
-//            @Parameter(required = true, content = {@Content(mediaType = "multipart/form-data", schema = @Schema(type = "string", format = "binary"))})
-//            @RequestBody MultipartFile image
-//    ) throws IOException {
-//        byte[] imageBytes = userService.updateUserImage(image);
-//        long fileSize = image.getSize();
-//        String mediaType = image.getContentType();
-//        if (mediaType == null) {
-//            mediaType = "application/octet-stream";
-//        }
-//        HttpHeaders httpHeaders = new HttpHeaders();
-//        httpHeaders.setContentType(MediaType.parseMediaType(mediaType));
-//        httpHeaders.setContentLength(fileSize);
-//        log.info("Avatar was successfully changed to new");
-//        return new ResponseEntity<>(imageBytes, httpHeaders, HttpStatus.OK);
-//    }
-
     @GetMapping(value = "/images/avatars/{id}", produces = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "Get user's avatar")
     @ApiResponses(value = {

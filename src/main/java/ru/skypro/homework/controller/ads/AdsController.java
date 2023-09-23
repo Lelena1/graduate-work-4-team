@@ -12,6 +12,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -58,6 +59,7 @@ public class AdsController {
             @ApiResponse(responseCode = "201", description = "Created", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = AdDto.class))}),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
     })
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<AdDto> addAd(
             @Parameter(description = "DTO to update Ad", required = true, schema = @Schema(implementation = CreateOrUpdateAdDto.class))
             @RequestPart("properties") @Valid CreateOrUpdateAdDto createOrUpdateAdDto,
@@ -68,6 +70,19 @@ public class AdsController {
         return new ResponseEntity<>(adDto, HttpStatus.CREATED);
     }
 
+    @GetMapping("/ads/me")
+    @Operation(summary = "Get all ads of the User")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = AdsDto.class))}),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
+    })
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<AdsDto> getAdsMe() {
+        AdsDto adsMe = adsService.getAdsMe();
+        log.info("Get all ads of the user");
+        return ResponseEntity.ok(adsMe);
+    }
+
     @GetMapping("/ads/{id}")
     @Operation(summary = "Get ad by id")
     @ApiResponses(value = {
@@ -75,6 +90,7 @@ public class AdsController {
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
             @ApiResponse(responseCode = "404", description = "Not found", content = @Content)
     })
+    @PreAuthorize("hasAnyAuthority('ADMIN','USER')")
     public ResponseEntity<ExtendedAdDto> getAds(
             @Parameter(name = "id", description = "Id of the ad", required = true)
             @PathVariable Integer id) {
@@ -86,22 +102,6 @@ public class AdsController {
         return new ResponseEntity<>(extendedAdDto, HttpStatus.OK);
     }
 
-    @DeleteMapping("/ads/{id}")
-    @Operation(summary = "Delete an ad with given Id")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "No Content", content = @Content),
-            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
-            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content),
-            @ApiResponse(responseCode = "404", description = "Not found", content = @Content)
-    })
-    public ResponseEntity<Void> removeAd(
-            @Parameter(name = "Id", description = "Id of the ad to delete", required = true)
-            @PathVariable Integer id) {
-        adsService.removeAd(id);
-        log.info("Ad with id {} deleted successfully", id);
-        return ResponseEntity.ok().build();
-    }
-
     @PatchMapping("/ads/{id}")
     @Operation(summary = "Update ad previously created")
     @ApiResponses(value = {
@@ -110,6 +110,7 @@ public class AdsController {
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
             @ApiResponse(responseCode = "404", description = "Not found", content = @Content)
     })
+    @PreAuthorize("hasAuthority('ADMIN') or (hasAuthority('USER') and @authServiceImpl.isUserAllowedToChangeAds(authentication, #id))")
     public ResponseEntity<AdDto> updateAds(
             @Parameter(required = true)
             @PathVariable Integer id,
@@ -120,16 +121,21 @@ public class AdsController {
         return ResponseEntity.ok(updatedAd);
     }
 
-    @GetMapping("/ads/me")
-    @Operation(summary = "Get all ads of the User")
+    @DeleteMapping("/ads/{id}")
+    @Operation(summary = "Delete an ad with given Id")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = AdsDto.class))}),
-            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
+            @ApiResponse(responseCode = "204", description = "No Content", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Not found", content = @Content)
     })
-    public ResponseEntity<AdsDto> getAdsMe() {
-        AdsDto adsMe = adsService.getAdsMe();
-        log.info("Get all ads of the user");
-        return ResponseEntity.ok(adsMe);
+    @PreAuthorize("hasAuthority('ADMIN') or (hasAuthority('USER') and @authServiceImpl.isUserAllowedToChangeAds(authentication, #id))")
+    public ResponseEntity<Void> removeAd(
+            @Parameter(name = "Id", description = "Id of the ad to delete", required = true)
+            @PathVariable Integer id) {
+        adsService.removeAd(id);
+        log.info("Ad with id {} deleted successfully", id);
+        return ResponseEntity.ok().build();
     }
 
     @PatchMapping(value = "/ads/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
@@ -140,6 +146,7 @@ public class AdsController {
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
             @ApiResponse(responseCode = "404", description = "Not found", content = @Content)
     })
+    @PreAuthorize("hasAuthority('ADMIN') or (hasAuthority('USER') and @authServiceImpl.isUserAllowedToChangeAds(authentication, #id))")
     public ResponseEntity<byte[]> updateImage(
             @Parameter(description = "Id of the ad", required = true)
             @PathVariable("id") Integer id,
