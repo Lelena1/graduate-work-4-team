@@ -1,7 +1,10 @@
 package ru.skypro.homework.config;
 
+import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -20,11 +23,21 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Bean
     public OpenAPI myOpenAPI() {
+        final String securityScheme = "Authentication";
         return new OpenAPI()
                 .info(new Info()
                         .title("Avito API Documantation")
                         .version("1.0")
-                        .description("Spring Boot RESTful application for Avito internet shop with Spring Security"));
+                        .description("Spring Boot RESTful application for Avito internet shop with Spring Security"))
+                .addSecurityItem(new SecurityRequirement().addList(securityScheme))
+                .components(
+                        new Components()
+                                .addSecuritySchemes(securityScheme, new SecurityScheme()
+                                        .name(securityScheme)
+                                        .type(SecurityScheme.Type.HTTP)
+                                        .scheme("basic"))
+
+                );
     }
 
 

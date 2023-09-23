@@ -25,7 +25,7 @@ public class WebSecurityConfig extends GlobalMethodSecurityConfiguration {
             "/webjars/**",
             "/login",
             "/register",
-            "/images/goods/**"
+            "/images/**"
     };
 
     @Bean
@@ -34,7 +34,7 @@ public class WebSecurityConfig extends GlobalMethodSecurityConfiguration {
                 .csrf().disable()
                 .authorizeHttpRequests(authorization -> authorization
                         .mvcMatchers(AUTH_WHITELIST).permitAll()
-                        .mvcMatchers("/users/**", "/images/avatars/**").authenticated()
+                        .mvcMatchers("/users/**").authenticated()
                 )
                 .cors()
                 .and()

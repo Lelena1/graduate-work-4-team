@@ -22,6 +22,7 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -54,8 +55,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto getUser() {
-        User author = getAuthor();
-        return userMapper.toUserDto(author);
+        User authorFromAuthentication = getAuthor();
+        Integer id = authorFromAuthentication.getId();
+        Optional<User> userOptional = usersRepository.findById(id);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            return userMapper.toUserDto(user);
+        }
+        throw new NotFoundException("User was not found in database");
     }
 
     @Override
@@ -67,7 +74,7 @@ public class UserServiceImpl implements UserService {
             userCustomService.updateUser(userCustom);
             return userMapper.toUpdateUserDto(author);
         } else {
-            throw new BadRequestException("UpdateUserDto пустой");
+            throw new BadRequestException("UpdateUserDto is empty");
         }
     }
 
@@ -75,31 +82,56 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void updateUserImage(MultipartFile image) throws IOException {
         User author = getAuthor();
-        String urlToImage = author.getImage();
-        if (urlToImage != null) {
+        String currentUrlToImage = author.getImage();
+        if (currentUrlToImage != null) {
             author.setImage(null);
             usersRepository.save(author);
-            imageService.deleteImageOfAvatars(urlToImage);
+
+            String[] split = currentUrlToImage.split("/");
+            String imageId = split[split.length - 1];
+            imageService.deleteImageOfAvatars(imageId);
         }
-        String urlToImageOfAvatar = imageService.consumeImageOfAvatar(image);
-        author.setImage(urlToImageOfAvatar);
+        String newUrlToImage = imageService.consumeImageOfAvatar(image);
+        author.setImage(newUrlToImage);
         usersRepository.save(author);
     }
 
+//    @Override
+//    @Transactional
+//    public byte[] updateUserImage(MultipartFile image) throws IOException {
+//        User author = getAuthor();
+//        String currentUrlToImage = author.getImage();
+//        if (currentUrlToImage != null) {
+//            author.setImage(null);
+//            usersRepository.save(author);
+//
+//            String[] split = currentUrlToImage.split("/");
+//            String fullFileName = split[split.length - 1];
+//            imageService.deleteImageOfAvatars(fullFileName);
+//        }
+//        String newUrlToImage = imageService.consumeImageOfAvatar(image);
+//        author.setImage(newUrlToImage);
+//        usersRepository.save(author);
+//
+//        String[] split = newUrlToImage.split("/");
+//        String fullFileName = split[split.length - 1];
+//
+//        Path path = imageService.getFullPathToImageOfAvatars(fullFileName);
+//        return imageService.imageToByteArray(path);
+//    }
+
     @Override
-    public byte[] getUserImage() throws IOException {
-        User author = getAuthor();
-        String urlToImage = author.getImage();
-        if (urlToImage == null || urlToImage.isEmpty()) {
-            throw new NotFoundException("У пользователя нет аватарки");
+    public byte[] getImage(String id) throws IOException {
+        if (id == null || id.isEmpty()) {
+            throw new NotFoundException("User do not have avatar");
         }
         try {
-            Path fullPathToImageOfAvatars = imageService.getFullPathToImageOfAvatars(urlToImage);
-            return imageService.imageToByteArray(fullPathToImageOfAvatars);
+            Path path = imageService.getFullPathToImageOfAvatars(id);
+            return imageService.imageToByteArray(path);
         } catch (NoSuchFileException exception) {
-            throw new NotFoundException("Файл с картинкой не найден по данному адресу" + urlToImage);
+            throw new NotFoundException("Image with avatar not found " + id);
         } catch (IOException exception) {
-            throw new IOException("Ошибка при чтении файла ", exception);
+            throw new IOException("File reading error ", exception);
         }
     }
 
