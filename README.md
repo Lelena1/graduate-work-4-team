@@ -22,7 +22,7 @@
 [Sergey Andreev](https://github.com/AndreevSV/) <br>
 [Ivan Paskhin](https://github.com/VGAInput)<br>
 [Dmitriy Chaparin](https://github.com/DmitriyChaparin)<br>
-[Alex Khaitov]()<br>
+[Alex Khaitov](https://github.com/alexonlyman)<br>
 
 ## Stack and libraries
 * Java 17
