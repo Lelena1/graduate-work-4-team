@@ -14,11 +14,10 @@ import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.config.WebMvcConfig;
 import ru.skypro.homework.dto.ads.in.CreateOrUpdateAdDto;
 import ru.skypro.homework.dto.ads.out.AdDto;
-import ru.skypro.homework.dto.ads.out.ads.Ad;
 import ru.skypro.homework.dto.comments.out.CommentDto;
+import ru.skypro.homework.entity.ads.Ad;
 import ru.skypro.homework.entity.comments.Comment;
 import ru.skypro.homework.service.ads.AdsService;
-import ru.skypro.homework.service.image.ImageService;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -31,8 +30,6 @@ class AdsControllerTest {
 
     @Mock
     private AdsService adsService;
-    @Mock
-    private ImageService imageService;
 
     @InjectMocks
     AdsController adsController;
